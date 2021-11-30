@@ -1,27 +1,27 @@
 package pkg
 
 type CeramicAPI interface {
-	// Streams
+	// Streams //
 
 	GetStreamState(streamID string) (*StreamStateResponse, error)
 	CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error)
 
-	// Multiqueries
+	// Multiqueries //
 
 	QueryStreams(req QueryStreamsRequest) (*QueryStreamsResponse, error)
 
-	// Commits
-
+	// Commits //
+	
 	Commit(req CommitRequest) (*CommitResponse, error)
 
-	// Pins
+	// Pins //
 
 	AddToPinset(streamID string) (*AddToPinsetResponse, error)
 	RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error)
 	ListStreamsInPinset() (*ListStreamsInPinsetResponse, error)
 	ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error)
 
-	// Node Info
+	// Node Info //
 
 	GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error)
 	HealthCheck() (*HealthCheckResponse, error)
@@ -32,8 +32,8 @@ type JSONResponse map[string]interface{}
 // Streams API //
 
 type StreamStateResponse struct {
-	Response     StreamState `json:"response,omitempty"`
-	ResponseCode int         `json:"code,omitempty"`
+	Response     StreamState `json:"response"`
+	ResponseCode int         `json:"code"`
 }
 
 type StreamState struct {
@@ -80,13 +80,13 @@ const (
 type CreateStreamRequest struct {
 	// https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/tables/streamtypes.csv
 	Type    int         `json:"type"`
-	Genesis interface{} `json:"genesis,omitempty"`
+	Genesis interface{} `json:"genesis"`
 	Opts    CreateOpts  `json:"opts,omitempty"`
 }
 
 type CreateStreamResponse struct {
-	Response     StreamState `json:"response,omitempty"`
-	ResponseCode int         `json:"code,omitempty"`
+	Response     StreamState `json:"response"`
+	ResponseCode int         `json:"code"`
 }
 
 // Multiqueries API //
@@ -106,10 +106,21 @@ type QueryStreamsResponse struct {
 
 // Commit API //
 
+type UpdateOpts struct {
+	Anchor  bool `json:"anchor,omitempty"`
+	Pin     bool `json:"pin,omitempty"`
+	Publish bool `json:"publish,omitempty"`
+}
+
 type CommitRequest struct {
+	StreamID string      `json:"streamId"`
+	Commit   interface{} `json:"commit"`
+	Opts     UpdateOpts  `json:"opts,omitempty"`
 }
 
 type CommitResponse struct {
+	Response     StreamState `json:"response,omitempty"`
+	ResponseCode int         `json:"code"`
 }
 
 func Commit(req CommitRequest) (*CommitResponse, error) {
@@ -119,6 +130,8 @@ func Commit(req CommitRequest) (*CommitResponse, error) {
 // Pins API //
 
 type AddToPinsetResponse struct {
+	StreamID     string `json:"streamId"`
+	ResponseCode int    `json:"code,omitempty"`
 }
 
 func AddToPinset(streamID string) (*AddToPinsetResponse, error) {
@@ -126,7 +139,8 @@ func AddToPinset(streamID string) (*AddToPinsetResponse, error) {
 }
 
 type RemoveFromPinsetResponse struct {
-	
+	StreamID     string `json:"streamId"`
+	ResponseCode int    `json:"code"`
 }
 
 func RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error) {
@@ -134,7 +148,8 @@ func RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error) {
 }
 
 type ListStreamsInPinsetResponse struct {
-	
+	PinnedStreamIDs []string `json:"pinnedStreamIds"`
+	ResponseCode    int      `json:"code"`
 }
 
 func ListStreamsInPinset() (*ListStreamsInPinsetResponse, error) {
@@ -142,7 +157,8 @@ func ListStreamsInPinset() (*ListStreamsInPinsetResponse, error) {
 }
 
 type ConfirmStreamInPinsetResponse struct {
-	
+	PinnedStreamIDs []string `json:"pinnedStreamIds"`
+	ResponseCode    int      `json:"code"`
 }
 
 func ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error) {
@@ -152,7 +168,8 @@ func ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, err
 // Node Info API //
 
 type GetSupportedBlockchainsResponse struct {
-	
+	SupportedChains []string `json:"supportedChains"`
+	ResponseCode    int      `json:"code"`
 }
 
 func GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error) {
@@ -160,7 +177,8 @@ func GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error) {
 }
 
 type HealthCheckResponse struct {
-	
+	HealthStatus string `json:"healthStatus"`
+	ResponseCode int    `json:"code"`
 }
 
 func HealthCheck() (*HealthCheckResponse, error) {
