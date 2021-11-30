@@ -10,9 +10,13 @@ import (
 )
 
 const (
-	ClayTestnet = "https://ceramic-clay.3boxlabs.com"
-	V0          = "api/v0"
-	Streams     = "streams"
+	ClayTestnet  = "https://ceramic-clay.3boxlabs.com"
+	V0           = "api/v0"
+	Streams      = "streams"
+	Multiqueries = "multiqueries"
+	Commits      = "commits"
+	Pins         = "pins"
+	Node         = "node"
 
 	ContentTypeHeader = "Content-Type"
 	ContentTypeJSON   = "application/json"

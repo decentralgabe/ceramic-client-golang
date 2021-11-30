@@ -1,11 +1,35 @@
 package pkg
 
 type CeramicAPI interface {
+	// Streams
+
 	GetStreamState(streamID string) (*StreamStateResponse, error)
 	CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error)
+
+	// Multiqueries
+
+	QueryStreams(req QueryStreamsRequest) (*QueryStreamsResponse, error)
+
+	// Commits
+
+	Commit(req CommitRequest) (*CommitResponse, error)
+
+	// Pins
+
+	AddToPinset(streamID string) (*AddToPinsetResponse, error)
+	RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error)
+	ListStreamsInPinset() (*ListStreamsInPinsetResponse, error)
+	ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error)
+
+	// Node Info
+
+	GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error)
+	HealthCheck() (*HealthCheckResponse, error)
 }
 
 type JSONResponse map[string]interface{}
+
+// Streams API //
 
 type StreamStateResponse struct {
 	Response     StreamState `json:"response,omitempty"`
@@ -63,4 +87,82 @@ type CreateStreamRequest struct {
 type CreateStreamResponse struct {
 	Response     StreamState `json:"response,omitempty"`
 	ResponseCode int         `json:"code,omitempty"`
+}
+
+// Multiqueries API //
+
+type QueryStreamsRequest struct {
+	Queries []QueryStreamRequest `json:"queries"`
+}
+
+type QueryStreamRequest struct {
+	StreamID string   `json:"streamId"`
+	Paths    []string `json:"paths"`
+}
+
+type QueryStreamsResponse struct {
+	Responses map[string]State
+}
+
+// Commit API //
+
+type CommitRequest struct {
+}
+
+type CommitResponse struct {
+}
+
+func Commit(req CommitRequest) (*CommitResponse, error) {
+	return nil, nil
+}
+
+// Pins API //
+
+type AddToPinsetResponse struct {
+}
+
+func AddToPinset(streamID string) (*AddToPinsetResponse, error) {
+	return nil, nil
+}
+
+type RemoveFromPinsetResponse struct {
+	
+}
+
+func RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error) {
+	return nil, nil
+}
+
+type ListStreamsInPinsetResponse struct {
+	
+}
+
+func ListStreamsInPinset() (*ListStreamsInPinsetResponse, error) {
+	return nil, nil
+}
+
+type ConfirmStreamInPinsetResponse struct {
+	
+}
+
+func ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error) {
+	return nil, nil
+}
+
+// Node Info API //
+
+type GetSupportedBlockchainsResponse struct {
+	
+}
+
+func GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error) {
+	return nil, nil
+}
+
+type HealthCheckResponse struct {
+	
+}
+
+func HealthCheck() (*HealthCheckResponse, error) {
+	return nil, nil
 }
