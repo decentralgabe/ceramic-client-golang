@@ -7,7 +7,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	client := NewCeramicClient(ClayTestnet, V0)
+	client := NewCeramicClient(ClayTestnet, V0Path)
 	assert.NotEmpty(t, client)
 
 	createReq := CreateStreamRequest{

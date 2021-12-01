@@ -1,17 +1,18 @@
 package pkg
 
 type CeramicAPI interface {
-	// Streams //
+	// StreamsPath //
 
 	GetStreamState(streamID string) (*StreamStateResponse, error)
 	CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error)
 
-	// Multiqueries //
+	// MultiqueriesPath //
 
+	QueryStream(req QueryStreamRequest) (*QueryStreamResponse, error)
 	QueryStreams(req QueryStreamsRequest) (*QueryStreamsResponse, error)
 
 	// Commits //
-	
+
 	Commit(req CommitRequest) (*CommitResponse, error)
 
 	// Pins //
@@ -29,7 +30,7 @@ type CeramicAPI interface {
 
 type JSONResponse map[string]interface{}
 
-// Streams API //
+// StreamsPath API //
 
 type StreamStateResponse struct {
 	Response     StreamState `json:"response"`
@@ -89,7 +90,7 @@ type CreateStreamResponse struct {
 	ResponseCode int         `json:"code"`
 }
 
-// Multiqueries API //
+// MultiqueriesPath API //
 
 type QueryStreamsRequest struct {
 	Queries []QueryStreamRequest `json:"queries"`
@@ -101,7 +102,13 @@ type QueryStreamRequest struct {
 }
 
 type QueryStreamsResponse struct {
-	Responses map[string]State
+	Responses    map[string]State `json:"responses"`
+	ResponseCode int              `json:"code"`
+}
+
+type QueryStreamResponse struct {
+	State        `json:"state"`
+	ResponseCode int `json:"code"`
 }
 
 // Commit API //
@@ -123,10 +130,6 @@ type CommitResponse struct {
 	ResponseCode int         `json:"code"`
 }
 
-func Commit(req CommitRequest) (*CommitResponse, error) {
-	return nil, nil
-}
-
 // Pins API //
 
 type AddToPinsetResponse struct {
@@ -134,17 +137,9 @@ type AddToPinsetResponse struct {
 	ResponseCode int    `json:"code,omitempty"`
 }
 
-func AddToPinset(streamID string) (*AddToPinsetResponse, error) {
-	return nil, nil
-}
-
 type RemoveFromPinsetResponse struct {
 	StreamID     string `json:"streamId"`
 	ResponseCode int    `json:"code"`
-}
-
-func RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error) {
-	return nil, nil
 }
 
 type ListStreamsInPinsetResponse struct {
@@ -152,17 +147,9 @@ type ListStreamsInPinsetResponse struct {
 	ResponseCode    int      `json:"code"`
 }
 
-func ListStreamsInPinset() (*ListStreamsInPinsetResponse, error) {
-	return nil, nil
-}
-
 type ConfirmStreamInPinsetResponse struct {
 	PinnedStreamIDs []string `json:"pinnedStreamIds"`
 	ResponseCode    int      `json:"code"`
-}
-
-func ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error) {
-	return nil, nil
 }
 
 // Node Info API //
@@ -172,15 +159,7 @@ type GetSupportedBlockchainsResponse struct {
 	ResponseCode    int      `json:"code"`
 }
 
-func GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error) {
-	return nil, nil
-}
-
 type HealthCheckResponse struct {
 	HealthStatus string `json:"healthStatus"`
 	ResponseCode int    `json:"code"`
-}
-
-func HealthCheck() (*HealthCheckResponse, error) {
-	return nil, nil
 }
