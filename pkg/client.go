@@ -18,6 +18,8 @@ const (
 	CommitsPath      = "commits"
 	PinsPath         = "pins"
 	NodePath         = "node"
+	ChainsPath       = "chains"
+	HealthcheckPath  = "healthcheck"
 
 	ContentTypeHeader = "Content-Type"
 	ContentTypeJSON   = "application/json"
@@ -47,20 +49,21 @@ func (c CeramicClient) GetStreamState(req StreamStateRequest) (*StreamStateRespo
 		return nil, err
 	}
 	defer resp.Body.Close()
-	state := StreamStateResponse{ResponseCode: resp.StatusCode}
 
-	var data StreamState
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	var data StreamState
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
-	state.Response = data
 
-	return &state, nil
+	return &StreamStateResponse{
+		Response:     data,
+		ResponseCode: resp.StatusCode,
+	}, nil
 }
 
 func (c CeramicClient) CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error) {
@@ -83,18 +86,20 @@ func (c CeramicClient) CreateStream(req CreateStreamRequest) (*CreateStreamRespo
 	}
 	defer resp.Body.Close()
 
-	state := CreateStreamResponse{ResponseCode: resp.StatusCode}
-	var data StreamState
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	var data StreamState
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
-	state.Response = data
-	return &state, nil
+
+	return &CreateStreamResponse{
+		Response:     data,
+		ResponseCode: resp.StatusCode,
+	}, nil
 }
 
 func (c CeramicClient) QueryStream(req QueryStreamRequest) (*QueryStreamResponse, error) {
@@ -134,19 +139,20 @@ func (c CeramicClient) QueryStreams(req QueryStreamsRequest) (*QueryStreamsRespo
 	}
 	defer resp.Body.Close()
 
-	response := QueryStreamsResponse{ResponseCode: resp.StatusCode}
-	data := make(map[string]State)
-
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	data := make(map[string]State)
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
-	response.Responses = data
-	return &response, nil
+
+	return &QueryStreamsResponse{
+		Responses:    data,
+		ResponseCode: resp.StatusCode,
+	}, nil
 }
 
 func (c CeramicClient) GetCommits(req GetCommitsRequest) (*GetCommitsResponse, error) {
@@ -162,12 +168,12 @@ func (c CeramicClient) GetCommits(req GetCommitsRequest) (*GetCommitsResponse, e
 		return nil, err
 	}
 
-	commits := GetCommitsResponse{ResponseCode: resp.StatusCode}
-	if err := json.Unmarshal(respBytes, &commits); err != nil {
+	getCommitsResp := GetCommitsResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &getCommitsResp); err != nil {
 		return nil, err
 	}
 
-	return &commits, nil
+	return &getCommitsResp, nil
 }
 
 func (c CeramicClient) ApplyCommit(req ApplyCommitRequest) (*ApplyCommitResponse, error) {
@@ -190,41 +196,156 @@ func (c CeramicClient) ApplyCommit(req ApplyCommitRequest) (*ApplyCommitResponse
 	}
 	defer resp.Body.Close()
 
-	response := ApplyCommitResponse{ResponseCode: resp.StatusCode}
-
-	var data StreamState
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
+	var data StreamState
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
-	response.Response = data
-	return &response, nil
+
+	return &ApplyCommitResponse{
+		Response:     data,
+		ResponseCode: resp.StatusCode,
+	}, nil
 }
 
 func (c CeramicClient) AddToPinset(req AddToPinsetRequest) (*AddToPinsetResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, PinsPath, req.StreamID}, "/")
+
+	// no body, no content type https://stackoverflow.com/a/29784642
+	resp, err := http.Post(url, "", nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	addToPinsetResp := AddToPinsetResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &addToPinsetResp); err != nil {
+		return nil, err
+	}
+
+	return &addToPinsetResp, nil
 }
 
 func (c CeramicClient) RemoveFromPinset(req RemoveFromPinsetRequest) (*RemoveFromPinsetResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, PinsPath, req.StreamID}, "/")
+
+	httpReq, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set(ContentTypeHeader, ContentTypeJSON)
+
+	resp, err := c.Client.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	removeFromPinsetResp := RemoveFromPinsetResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &removeFromPinsetResp); err != nil {
+		return nil, err
+	}
+
+	return &removeFromPinsetResp, nil
 }
 
 func (c CeramicClient) ListStreamsInPinset() (*ListStreamsInPinsetResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, PinsPath}, "/")
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	streamsInPinsetResp := ListStreamsInPinsetResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &streamsInPinsetResp); err != nil {
+		return nil, err
+	}
+
+	return &streamsInPinsetResp, nil
 }
 
 func (c CeramicClient) ConfirmStreamInPinset(req ConfirmStreamInPinsetRequest) (*ConfirmStreamInPinsetResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, PinsPath, req.StreamID}, "/")
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	streamInPinsetResp := ConfirmStreamInPinsetResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &streamInPinsetResp); err != nil {
+		return nil, err
+	}
+
+	return &streamInPinsetResp, nil
 }
 
 func (c CeramicClient) GetSupportedBlockchains() (*GetSupportedBlockchainsResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, NodePath, ChainsPath}, "/")
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	supportedChains := GetSupportedBlockchainsResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &supportedChains); err != nil {
+		return nil, err
+	}
+
+	return &supportedChains, nil
 }
 
 func (c CeramicClient) HealthCheck() (*HealthCheckResponse, error) {
-	return nil, nil
+	url := strings.Join([]string{c.Host, c.BasePath, NodePath, HealthcheckPath}, "/")
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var healthCheckStatus string
+	if err := json.Unmarshal(respBytes, &healthCheckStatus); err != nil {
+		return nil, err
+	}
+
+	return &HealthCheckResponse{
+		HealthStatus: healthCheckStatus,
+		ResponseCode: resp.StatusCode,
+	}, nil
 }
