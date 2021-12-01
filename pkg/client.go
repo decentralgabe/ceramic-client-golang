@@ -108,7 +108,7 @@ func (c CeramicClient) QueryStream(req QueryStreamRequest) (*QueryStreamResponse
 		return nil, err
 	}
 	if len(resp.Responses) == 0 {
-		return nil, fmt.Errorf("no stream found for stream<%s> with paths: %s", req.StreamID, strings.Join(req.Paths, ", "))
+		return nil, fmt.Errorf("stream not found for stream<%s> with paths: %s", req.StreamID, strings.Join(req.Paths, ", "))
 	}
 	if len(resp.Responses) > 1 {
 		return nil, fmt.Errorf("multiple responses returned for stream<%s> with paths: %s", req.StreamID, strings.Join(req.Paths, ", "))
