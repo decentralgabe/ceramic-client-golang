@@ -3,7 +3,7 @@ package pkg
 type CeramicAPI interface {
 	// StreamsPath //
 
-	GetStreamState(streamID string) (*StreamStateResponse, error)
+	GetStreamState(rqe StreamStateRequest) (*StreamStateResponse, error)
 	CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error)
 
 	// MultiqueriesPath //
@@ -13,14 +13,15 @@ type CeramicAPI interface {
 
 	// Commits //
 
-	Commit(req CommitRequest) (*CommitResponse, error)
+	GetCommits(req GetCommitsRequest) (*GetCommitsResponse, error)
+	ApplyCommit(req ApplyCommitRequest) (*ApplyCommitResponse, error)
 
 	// Pins //
 
-	AddToPinset(streamID string) (*AddToPinsetResponse, error)
-	RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error)
+	AddToPinset(req AddToPinsetRequest) (*AddToPinsetResponse, error)
+	RemoveFromPinset(req RemoveFromPinsetRequest) (*RemoveFromPinsetResponse, error)
 	ListStreamsInPinset() (*ListStreamsInPinsetResponse, error)
-	ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error)
+	ConfirmStreamInPinset(req ConfirmStreamInPinsetRequest) (*ConfirmStreamInPinsetResponse, error)
 
 	// Node Info //
 
@@ -31,6 +32,10 @@ type CeramicAPI interface {
 type JSONResponse map[string]interface{}
 
 // StreamsPath API //
+
+type StreamStateRequest struct {
+	StreamID string `json:"streamId"`
+}
 
 type StreamStateResponse struct {
 	Response     StreamState `json:"response"`
@@ -107,11 +112,21 @@ type QueryStreamsResponse struct {
 }
 
 type QueryStreamResponse struct {
-	State        `json:"state"`
-	ResponseCode int `json:"code"`
+	Response     State `json:"state"`
+	ResponseCode int   `json:"code"`
 }
 
-// Commit API //
+// GetCommits API //
+
+type GetCommitsRequest struct {
+	StreamID string `json:"streamId"`
+}
+
+type GetCommitsResponse struct {
+	StreamID     string        `json:"streamId"`
+	Commits      []interface{} `json:"commits"`
+	ResponseCode int           `json:"code"`
+}
 
 type UpdateOpts struct {
 	Anchor  bool `json:"anchor,omitempty"`
@@ -119,22 +134,30 @@ type UpdateOpts struct {
 	Publish bool `json:"publish,omitempty"`
 }
 
-type CommitRequest struct {
+type ApplyCommitRequest struct {
 	StreamID string      `json:"streamId"`
 	Commit   interface{} `json:"commit"`
 	Opts     UpdateOpts  `json:"opts,omitempty"`
 }
 
-type CommitResponse struct {
-	Response     StreamState `json:"response,omitempty"`
+type ApplyCommitResponse struct {
+	Response     StreamState `json:"response"`
 	ResponseCode int         `json:"code"`
 }
 
 // Pins API //
 
+type AddToPinsetRequest struct {
+	StreamID string `json:"streamId"`
+}
+
 type AddToPinsetResponse struct {
 	StreamID     string `json:"streamId"`
-	ResponseCode int    `json:"code,omitempty"`
+	ResponseCode int    `json:"code"`
+}
+
+type RemoveFromPinsetRequest struct {
+	StreamID string `json:"streamId"`
 }
 
 type RemoveFromPinsetResponse struct {
@@ -145,6 +168,10 @@ type RemoveFromPinsetResponse struct {
 type ListStreamsInPinsetResponse struct {
 	PinnedStreamIDs []string `json:"pinnedStreamIds"`
 	ResponseCode    int      `json:"code"`
+}
+
+type ConfirmStreamInPinsetRequest struct {
+	StreamID string `json:"streamId"`
 }
 
 type ConfirmStreamInPinsetResponse struct {

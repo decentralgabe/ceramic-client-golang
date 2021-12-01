@@ -15,6 +15,7 @@ const (
 	V0Path           = "api/v0"
 	StreamsPath      = "streams"
 	MultiqueriesPath = "multiqueries"
+	CommitsPath      = "commits"
 	PinsPath         = "pins"
 	NodePath         = "node"
 
@@ -39,8 +40,8 @@ func NewCeramicClient(host, base string) *CeramicClient {
 	}
 }
 
-func (c CeramicClient) GetStreamState(streamID string) (*StreamStateResponse, error) {
-	url := strings.Join([]string{c.Host, c.BasePath, StreamsPath, streamID}, "/")
+func (c CeramicClient) GetStreamState(req StreamStateRequest) (*StreamStateResponse, error) {
+	url := strings.Join([]string{c.Host, c.BasePath, StreamsPath, req.StreamID}, "/")
 	resp, err := c.Get(url)
 	if err != nil {
 		return nil, err
@@ -108,7 +109,7 @@ func (c CeramicClient) QueryStream(req QueryStreamRequest) (*QueryStreamResponse
 		return nil, fmt.Errorf("multiple responses returned for stream<%s> with paths: %s", req.StreamID, strings.Join(req.Paths, ", "))
 	}
 	return &QueryStreamResponse{
-		State:        resp.Responses[req.StreamID],
+		Response:     resp.Responses[req.StreamID],
 		ResponseCode: resp.ResponseCode,
 	}, nil
 }
@@ -148,15 +149,67 @@ func (c CeramicClient) QueryStreams(req QueryStreamsRequest) (*QueryStreamsRespo
 	return &response, nil
 }
 
-func (c CeramicClient) Commit(req CommitRequest) (*CommitResponse, error) {
+func (c CeramicClient) GetCommits(req GetCommitsRequest) (*GetCommitsResponse, error) {
+	url := strings.Join([]string{c.Host, c.BasePath, CommitsPath, req.StreamID}, "/")
+	resp, err := c.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	commits := GetCommitsResponse{ResponseCode: resp.StatusCode}
+	if err := json.Unmarshal(respBytes, &commits); err != nil {
+		return nil, err
+	}
+
+	return &commits, nil
+}
+
+func (c CeramicClient) ApplyCommit(req ApplyCommitRequest) (*ApplyCommitResponse, error) {
+	url := strings.Join([]string{c.Host, c.BasePath, CommitsPath}, "/")
+
+	reqBytes, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(reqBytes))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set(ContentTypeHeader, ContentTypeJSON)
+
+	resp, err := c.Client.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	response := ApplyCommitResponse{ResponseCode: resp.StatusCode}
+
+	var data StreamState
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(respBytes, &data); err != nil {
+		return nil, err
+	}
+	response.Response = data
+	return &response, nil
+}
+
+func (c CeramicClient) AddToPinset(req AddToPinsetRequest) (*AddToPinsetResponse, error) {
 	return nil, nil
 }
 
-func (c CeramicClient) AddToPinset(streamID string) (*AddToPinsetResponse, error) {
-	return nil, nil
-}
-
-func (c CeramicClient) RemoveFromPinset(streamID string) (*RemoveFromPinsetResponse, error) {
+func (c CeramicClient) RemoveFromPinset(req RemoveFromPinsetRequest) (*RemoveFromPinsetResponse, error) {
 	return nil, nil
 }
 
@@ -164,7 +217,7 @@ func (c CeramicClient) ListStreamsInPinset() (*ListStreamsInPinsetResponse, erro
 	return nil, nil
 }
 
-func (c CeramicClient) ConfirmStreamInPinset(streamID string) (*ConfirmStreamInPinsetResponse, error) {
+func (c CeramicClient) ConfirmStreamInPinset(req ConfirmStreamInPinsetRequest) (*ConfirmStreamInPinsetResponse, error) {
 	return nil, nil
 }
 
