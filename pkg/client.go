@@ -339,13 +339,8 @@ func (c CeramicClient) HealthCheck() (*HealthCheckResponse, error) {
 		return nil, err
 	}
 
-	var healthCheckStatus string
-	if err := json.Unmarshal(respBytes, &healthCheckStatus); err != nil {
-		return nil, err
-	}
-
 	return &HealthCheckResponse{
-		HealthStatus: healthCheckStatus,
+		HealthStatus: string(respBytes),
 		ResponseCode: resp.StatusCode,
 	}, nil
 }
