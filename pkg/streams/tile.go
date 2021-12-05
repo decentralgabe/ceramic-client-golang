@@ -1,7 +1,7 @@
 package streams
 
 import (
-	"github.com/glcohen/ceramic-client-golang/pkg/api"
+	"github.com/glcohen/ceramic-client-golang/pkg/models"
 )
 
 type TileMetadataArgs struct {
@@ -14,25 +14,25 @@ type TileMetadataArgs struct {
 }
 
 var (
-	DefaultCreateOpts = api.CreateOpts{
-		UpdateOpts: &api.UpdateOpts{
-			PublishOpts: &api.PublishOpts{Publish: true},
-			AnchorOpts:  &api.AnchorOpts{Anchor: true},
+	DefaultCreateOpts = models.CreateOpts{
+		UpdateOpts: &models.UpdateOpts{
+			PublishOpts: &models.PublishOpts{Publish: true},
+			AnchorOpts:  &models.AnchorOpts{Anchor: true},
 		},
-		SyncOpts: &api.SyncOpts{
-			Sync: api.PreferCache,
-		},
-	}
-
-	DefaultLoadOpts = api.LoadOpts{
-		SyncOpts: &api.SyncOpts{
-			Sync: api.PreferCache,
+		SyncOpts: &models.SyncOpts{
+			Sync: models.PreferCache,
 		},
 	}
 
-	DefaultUpdateOpts = api.UpdateOpts{
-		PublishOpts:  &api.PublishOpts{Publish: true},
-		AnchorOpts:   &api.AnchorOpts{Anchor: true},
-		InternalOpts: &api.InternalOpts{ThrowOnInvalidCommit: true},
+	DefaultLoadOpts = models.LoadOpts{
+		SyncOpts: &models.SyncOpts{
+			Sync: models.PreferCache,
+		},
+	}
+
+	DefaultUpdateOpts = models.UpdateOpts{
+		PublishOpts:  &models.PublishOpts{Publish: true},
+		AnchorOpts:   &models.AnchorOpts{Anchor: true},
+		InternalOpts: &models.InternalOpts{ThrowOnInvalidCommit: true},
 	}
 )

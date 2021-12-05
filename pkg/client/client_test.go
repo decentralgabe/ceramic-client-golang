@@ -30,7 +30,7 @@ func TestStreams(t *testing.T) {
 	fmt.Printf("%+v\n", createResp)
 
 	// get it back
-	streamResp, err := client.GetStreamState(api.StreamStateRequest{StreamID: createResp.Response.StreamID})
+	streamResp, err := client.GetStreamState(api.StreamStateRequest{StreamID: createResp.Response.ID})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, streamResp)
 

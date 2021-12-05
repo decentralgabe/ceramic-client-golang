@@ -1,6 +1,9 @@
 package api
 
-import "github.com/glcohen/ceramic-client-golang/pkg/streams"
+import (
+	"github.com/glcohen/ceramic-client-golang/pkg/models"
+	"github.com/glcohen/ceramic-client-golang/pkg/streams"
+)
 
 type CeramicAPI interface {
 	// StreamsPath //
@@ -31,8 +34,6 @@ type CeramicAPI interface {
 	HealthCheck() (*HealthCheckResponse, error)
 }
 
-type JSONResponse map[string]interface{}
-
 // StreamsPath API //
 
 type StreamStateRequest struct {
@@ -51,14 +52,14 @@ type Metadata struct {
 
 type CreateStreamRequest struct {
 	// https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/tables/streamtypes.csv
-	Type    int         `json:"type"`
-	Genesis interface{} `json:"genesis"`
-	Opts    CreateOpts  `json:"opts,omitempty"`
+	Type    int               `json:"type"`
+	Genesis interface{}       `json:"genesis"`
+	Opts    models.CreateOpts `json:"opts,omitempty"`
 }
 
 type CreateStreamResponse struct {
-	Response     streams.StreamState `json:"response"`
-	ResponseCode int                 `json:"code"`
+	Response     streams.StreamStateHolder `json:"response"`
+	ResponseCode int                       `json:"code"`
 }
 
 // MultiqueriesPath API //
@@ -95,9 +96,9 @@ type GetCommitsResponse struct {
 }
 
 type ApplyCommitRequest struct {
-	StreamID string      `json:"streamId"`
-	Commit   interface{} `json:"commit"`
-	Opts     UpdateOpts  `json:"opts,omitempty"`
+	StreamID string            `json:"streamId"`
+	Commit   interface{}       `json:"commit"`
+	Opts     models.UpdateOpts `json:"opts,omitempty"`
 }
 
 type ApplyCommitResponse struct {

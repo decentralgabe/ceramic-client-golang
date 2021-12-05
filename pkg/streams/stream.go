@@ -2,7 +2,6 @@ package streams
 
 import (
 	"encoding/json"
-	"github.com/glcohen/ceramic-client-golang/pkg/api"
 	cid "github.com/ipfs/go-cid/_rsrch/cidiface"
 	"github.com/textileio/go-did-resolver/threeid"
 )
@@ -135,16 +134,14 @@ type StreamState struct {
 	Log                []LogEntry       `json:"log,omitempty"`
 }
 
-type StreamID string
-
 type StreamStateHolder struct {
-	ID    StreamID    `json:"id,omitempty"`
+	ID    string      `json:"id,omitempty"`
 	State StreamState `json:"state,omitempty"`
 }
 
 type Stream interface {
-	ID() StreamID
-	API() api.CeramicAPI
+	ID() string
+	// API() api.CeramicAPI
 	Metadata() StreamMetadata
 	Content() interface{}
 	Controllers() []string

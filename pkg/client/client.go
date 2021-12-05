@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/glcohen/ceramic-client-golang/pkg/api"
+	"github.com/glcohen/ceramic-client-golang/pkg/streams"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -56,7 +57,7 @@ func (c CeramicClient) GetStreamState(req api.StreamStateRequest) (*api.StreamSt
 		return nil, err
 	}
 
-	var data api.StreamState
+	var data streams.StreamState
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
@@ -92,7 +93,7 @@ func (c CeramicClient) CreateStream(req api.CreateStreamRequest) (*api.CreateStr
 		return nil, err
 	}
 
-	var data api.StreamState
+	var data streams.StreamStateHolder
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
@@ -145,7 +146,7 @@ func (c CeramicClient) QueryStreams(req api.QueryStreamsRequest) (*api.QueryStre
 		return nil, err
 	}
 
-	data := make(map[string]api.State)
+	data := make(map[string]streams.StreamState)
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
@@ -202,7 +203,7 @@ func (c CeramicClient) ApplyCommit(req api.ApplyCommitRequest) (*api.ApplyCommit
 		return nil, err
 	}
 
-	var data api.StreamState
+	var data streams.StreamState
 	if err := json.Unmarshal(respBytes, &data); err != nil {
 		return nil, err
 	}
