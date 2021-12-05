@@ -2,7 +2,6 @@ package streams
 
 import (
 	"encoding/json"
-	cid "github.com/ipfs/go-cid/_rsrch/cidiface"
 	"github.com/textileio/go-did-resolver/threeid"
 )
 
@@ -23,14 +22,14 @@ const (
 	SignedSigStatus
 )
 
-type AnchorStatus int
+type AnchorStatus string
 
 const (
-	NotRequested AnchorStatus = iota
-	Pending
-	Processing
-	Anchored
-	Failed
+	NotRequested AnchorStatus = "NOT_REQUESTED"
+	Pending                   = "PENDING"
+	Processing                = "PROCESSING"
+	Anchored                  = "ANCHORED"
+	Failed                    = "FAILED"
 )
 
 type CommitType int
@@ -61,10 +60,10 @@ type GenesisCommit struct {
 }
 
 type RawCommit struct {
-	ID     cid.Cid          `json:"id,omitempty"`
+	ID     string           `json:"id,omitempty"`
 	Header CommitHeader     `json:"header,omitempty"`
 	Data   *json.RawMessage `json:"data,omitempty"`
-	Prev   cid.Cid          `json:"prev,omitempty"`
+	Prev   string           `json:"prev,omitempty"`
 }
 
 type AnchorProof struct {
@@ -76,10 +75,10 @@ type AnchorProof struct {
 }
 
 type AnchorCommit struct {
-	ID    cid.Cid `json:"id,omitempty"`
-	Prev  cid.Cid `json:"prev,omitempty"`
-	Proof cid.Cid `json:"proof,omitempty"`
-	Path  string  `json:"path,omitempty"`
+	ID    string `json:"id,omitempty"`
+	Prev  string `json:"prev,omitempty"`
+	Proof string `json:"proof,omitempty"`
+	Path  string `json:"path,omitempty"`
 }
 
 type StreamMetadata struct {
@@ -98,7 +97,7 @@ type StreamNext struct {
 }
 
 type LogEntry struct {
-	CID       cid.Cid    `json:"cid,omitempty"`
+	CID       string     `json:"cid,omitempty"`
 	Type      CommitType `json:"type,omitempty"`
 	Timestamp uint64     `json:"timestamp,omitempty"`
 }
@@ -111,7 +110,7 @@ type JWSSignature struct {
 type DAGJWS struct {
 	Payload    string         `json:"payload,omitempty"`
 	Signatures []JWSSignature `json:"signatures,omitempty"`
-	Link       cid.Cid        `json:"link,omitempty"`
+	Link       string         `json:"link,omitempty"`
 }
 
 type CommitData struct {
@@ -128,14 +127,15 @@ type StreamState struct {
 	Next               StreamNext       `json:"next,omitempty"`
 	Metadata           StreamMetadata   `json:"metadata,omitempty"`
 	Signature          SignatureStatus  `json:"signature,omitempty"`
-	AnchorStatus       AnchorStatus     `json:"anchorStatus,omitempty"`
+	AnchorStatus       string           `json:"anchorStatus,omitempty"`
 	AnchorScheduledFor uint64           `json:"anchorScheduledFor,omitempty"`
 	AnchorProof        AnchorProof      `json:"anchorProof"`
 	Log                []LogEntry       `json:"log,omitempty"`
+	DocType            string           `json:"doctype,omitempty"`
 }
 
 type StreamStateHolder struct {
-	ID    string      `json:"id,omitempty"`
+	ID    string      `json:"streamId,omitempty"`
 	State StreamState `json:"state,omitempty"`
 }
 
@@ -145,7 +145,7 @@ type Stream interface {
 	Metadata() StreamMetadata
 	Content() interface{}
 	Controllers() []string
-	Tip() cid.Cid
+	Tip() string
 	CommitID() threeid.CommitID
 	AllCommitIDs() []threeid.CommitID
 	AnchorCommitIDs() []threeid.CommitID

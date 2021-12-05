@@ -8,7 +8,7 @@ import (
 type CeramicAPI interface {
 	// StreamsPath //
 
-	GetStreamState(rqe StreamStateRequest) (*StreamStateResponse, error)
+	GetStreamState(req StreamStateRequest) (*StreamStateResponse, error)
 	CreateStream(req CreateStreamRequest) (*CreateStreamResponse, error)
 
 	// MultiqueriesPath //
