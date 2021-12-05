@@ -1,4 +1,6 @@
-package pkg
+package api
+
+import "github.com/glcohen/ceramic-client-golang/pkg/streams"
 
 type CeramicAPI interface {
 	// StreamsPath //
@@ -38,50 +40,14 @@ type StreamStateRequest struct {
 }
 
 type StreamStateResponse struct {
-	Response     StreamState `json:"response"`
-	ResponseCode int         `json:"code"`
-}
-
-type StreamState struct {
-	StreamID string `json:"streamId"`
-	State    State  `json:"state"`
-}
-
-type State struct {
-	Type               int         `json:"type"`
-	Content            interface{} `json:"content"`
-	Metadata           Metadata    `json:"metadata"`
-	Signature          int         `json:"signature"`
-	AnchorStatus       string      `json:"anchorStatus"`
-	Log                []LogEntry  `json:"log"`
-	AnchorScheduledFor string      `json:"anchorScheduledFor"`
+	Response     streams.StreamState `json:"response"`
+	ResponseCode int                 `json:"code"`
 }
 
 type Metadata struct {
 	Family      string   `json:"family"`
 	Controllers []string `json:"controllers"`
 }
-
-type LogEntry struct {
-	CID  string `json:"cid"`
-	Type int    `json:"type"`
-}
-
-type CreateOpts struct {
-	Anchor             bool        `json:"anchor,omitempty"`
-	Pin                bool        `json:"pin,omitempty"`
-	Publish            bool        `json:"publish,omitempty"`
-	Sync               SyncOptions `json:"sync,omitempty"`
-	SyncTimeoutSeconds int         `json:"syncTimeoutSeconds,omitempty"`
-}
-
-type SyncOptions int
-
-const (
-	NeverSync SyncOptions = iota
-	PreferCache
-	SyncAlways
-)
 
 type CreateStreamRequest struct {
 	// https://github.com/ceramicnetwork/CIP/blob/main/CIPs/CIP-59/tables/streamtypes.csv
@@ -91,8 +57,8 @@ type CreateStreamRequest struct {
 }
 
 type CreateStreamResponse struct {
-	Response     StreamState `json:"response"`
-	ResponseCode int         `json:"code"`
+	Response     streams.StreamState `json:"response"`
+	ResponseCode int                 `json:"code"`
 }
 
 // MultiqueriesPath API //
@@ -107,13 +73,13 @@ type QueryStreamRequest struct {
 }
 
 type QueryStreamsResponse struct {
-	Responses    map[string]State `json:"responses"`
-	ResponseCode int              `json:"code"`
+	Responses    map[string]streams.StreamState `json:"responses"`
+	ResponseCode int                            `json:"code"`
 }
 
 type QueryStreamResponse struct {
-	Response     State `json:"state"`
-	ResponseCode int   `json:"code"`
+	Response     streams.StreamState `json:"state"`
+	ResponseCode int                 `json:"code"`
 }
 
 // GetCommits API //
@@ -128,12 +94,6 @@ type GetCommitsResponse struct {
 	ResponseCode int           `json:"code"`
 }
 
-type UpdateOpts struct {
-	Anchor  bool `json:"anchor,omitempty"`
-	Pin     bool `json:"pin,omitempty"`
-	Publish bool `json:"publish,omitempty"`
-}
-
 type ApplyCommitRequest struct {
 	StreamID string      `json:"streamId"`
 	Commit   interface{} `json:"commit"`
@@ -141,8 +101,8 @@ type ApplyCommitRequest struct {
 }
 
 type ApplyCommitResponse struct {
-	Response     StreamState `json:"response"`
-	ResponseCode int         `json:"code"`
+	Response     streams.StreamState `json:"response"`
+	ResponseCode int                 `json:"code"`
 }
 
 // Pins API //

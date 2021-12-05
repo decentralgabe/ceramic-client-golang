@@ -1,7 +1,8 @@
-package pkg
+package client
 
 import (
 	"fmt"
+	"github.com/glcohen/ceramic-client-golang/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -11,7 +12,7 @@ func TestStreams(t *testing.T) {
 	client := NewCeramicClient(ClayTestnet, V0Path)
 	assert.NotEmpty(t, client)
 
-	createReq := CreateStreamRequest{
+	createReq := api.CreateStreamRequest{
 		Type: 0,
 		Genesis: map[string]interface{}{
 			"header": map[string]interface{}{
@@ -29,7 +30,7 @@ func TestStreams(t *testing.T) {
 	fmt.Printf("%+v\n", createResp)
 
 	// get it back
-	streamResp, err := client.GetStreamState(StreamStateRequest{StreamID: createResp.Response.StreamID})
+	streamResp, err := client.GetStreamState(api.StreamStateRequest{StreamID: createResp.Response.StreamID})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, streamResp)
 

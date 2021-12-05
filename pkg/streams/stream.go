@@ -2,8 +2,7 @@ package streams
 
 import (
 	"encoding/json"
-	"github.com/glcohen/ceramic-client-golang/pkg"
-	_ "github.com/ipfs/go-cid"
+	"github.com/glcohen/ceramic-client-golang/pkg/api"
 	cid "github.com/ipfs/go-cid/_rsrch/cidiface"
 	"github.com/textileio/go-did-resolver/threeid"
 )
@@ -145,7 +144,7 @@ type StreamStateHolder struct {
 
 type Stream interface {
 	ID() StreamID
-	API() pkg.CeramicAPI
+	API() api.CeramicAPI
 	Metadata() StreamMetadata
 	Content() interface{}
 	Controllers() []string

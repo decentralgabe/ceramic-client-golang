@@ -1,7 +1,7 @@
 package dids
 
 import (
-	"github.com/glcohen/ceramic-client-golang/pkg"
+	"github.com/glcohen/ceramic-client-golang/internal"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -54,7 +54,7 @@ func TestResolver(t *testing.T) {
 	})
 
 	t.Run("new did:key", func(tt *testing.T) {
-		pk, _, err := pkg.GenerateEd25519Key()
+		pk, _, err := internal.GenerateEd25519Key()
 		assert.NoError(tt, err)
 		did, err := CreateDIDKey(pk)
 		assert.NoError(tt, err)
