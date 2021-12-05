@@ -124,7 +124,7 @@ type GetCommitsRequest struct {
 
 type GetCommitsResponse struct {
 	StreamID     string        `json:"streamId"`
-	Commits      []interface{} `json:"commits"`
+	Commits      []interface{} `json:"streams"`
 	ResponseCode int           `json:"code"`
 }
 

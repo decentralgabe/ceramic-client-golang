@@ -15,7 +15,7 @@ const (
 	V0Path           = "api/v0"
 	StreamsPath      = "streams"
 	MultiqueriesPath = "multiqueries"
-	CommitsPath      = "commits"
+	CommitsPath      = "streams"
 	PinsPath         = "pins"
 	NodePath         = "node"
 	ChainsPath       = "chains"
