@@ -1,6 +1,7 @@
 package dids
 
 import (
+	"fmt"
 	"github.com/textileio/go-did-resolver/keys"
 	"github.com/textileio/go-did-resolver/resolver"
 	"github.com/textileio/go-did-resolver/threeid"
@@ -24,7 +25,7 @@ func CreateDefaultResolver(baseURL string) Resolver {
 
 func CreateDIDResolver(baseURL string, resolvers ...resolver.Resolver) Resolver {
 	client := threeid.HTTPClient{APIURL: baseURL}
-	registry := resolver.New(resolvers, true)
+	registry := resolver.New(resolvers, false)
 	return Resolver{
 		client:   client,
 		registry: registry,
@@ -35,6 +36,9 @@ func (r Resolver) Resolve(did string) (*ResolvedDID, error) {
 	resolvedMetadata, document, documentMetadata, err := r.registry.Resolve(did, nil)
 	if err != nil {
 		return nil, err
+	}
+	if document == nil {
+		return nil, fmt.Errorf("did<%s> not able to be resolved: %s", did, resolvedMetadata.Error)
 	}
 	return &ResolvedDID{
 		ResolutionMetadata: resolvedMetadata,

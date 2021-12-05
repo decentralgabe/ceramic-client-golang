@@ -1,6 +1,7 @@
 package dids
 
 import (
+	"github.com/glcohen/ceramic-client-golang/pkg"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -36,7 +37,7 @@ func TestResolver(t *testing.T) {
 		assert.Contains(tt, err.Error(), "error parsing varint")
 	})
 
-	t.Run("good did:key", func(tt *testing.T) {
+	t.Run("known did:key", func(tt *testing.T) {
 		did := "did:key:z6MktvqCyLxTsXUH1tUZncNdVeEZ7hNh7npPRbUU27GTrYb8"
 		resolvedDID, err := resolver.Resolve(did)
 		assert.NoError(tt, err)
@@ -50,5 +51,24 @@ func TestResolver(t *testing.T) {
 		assert.True(tt, len(resolvedDID.Document.Authentication) == 1)
 		assert.Equal(tt, "Ed25519VerificationKey2018", resolvedDID.Document.Authentication[0].Type)
 		assert.Equal(tt, "zFUaAP6i2XyyouPds73QneYgZJ86qhua2jaZYBqJSwKok", resolvedDID.Document.Authentication[0].PublicKeyMultibase)
+	})
+
+	t.Run("new did:key", func(tt *testing.T) {
+		pk, _, err := pkg.GenerateEd25519Key()
+		assert.NoError(tt, err)
+		did, err := CreateDIDKey(pk)
+		assert.NoError(tt, err)
+
+		resolvedDID, err := resolver.Resolve(*did)
+		assert.NoError(tt, err)
+		assert.NotEmpty(tt, resolvedDID)
+
+		assert.Empty(tt, resolvedDID.ResolutionMetadata)
+		assert.NotEmpty(tt, resolvedDID.Document)
+		assert.Empty(tt, resolvedDID.DocumentMetadata)
+		assert.Equal(tt, *did, resolvedDID.Document.ID)
+
+		assert.True(tt, len(resolvedDID.Document.Authentication) == 1)
+		assert.Equal(tt, "Ed25519VerificationKey2018", resolvedDID.Document.Authentication[0].Type)
 	})
 }
