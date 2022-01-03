@@ -1,7 +1,7 @@
 package streams
 
 import (
-	"github.com/glcohen/ceramic-client-golang/pkg/models"
+	"github.com/decentralgabe/ceramic-client-golang/pkg/models"
 )
 
 type TileMetadataArgs struct {

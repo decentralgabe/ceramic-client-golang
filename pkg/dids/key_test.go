@@ -1,7 +1,7 @@
 package dids
 
 import (
-	"github.com/glcohen/ceramic-client-golang/internal"
+	"github.com/decentralgabe/ceramic-client-golang/internal"
 	"github.com/ockam-network/did"
 	"github.com/stretchr/testify/assert"
 	"github.com/textileio/go-did-resolver/keys"

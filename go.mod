@@ -1,4 +1,4 @@
-module github.com/glcohen/ceramic-client-golang
+module github.com/decentralgabe/ceramic-client-golang
 
 go 1.17
 

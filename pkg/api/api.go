@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/glcohen/ceramic-client-golang/pkg/models"
-	"github.com/glcohen/ceramic-client-golang/pkg/streams"
+	"github.com/decentralgabe/ceramic-client-golang/pkg/models"
+	"github.com/decentralgabe/ceramic-client-golang/pkg/streams"
 )
 
 type CeramicAPI interface {

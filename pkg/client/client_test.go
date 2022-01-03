@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/glcohen/ceramic-client-golang/pkg/api"
+	"github.com/decentralgabe/ceramic-client-golang/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"

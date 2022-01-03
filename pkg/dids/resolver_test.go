@@ -1,7 +1,7 @@
 package dids
 
 import (
-	"github.com/glcohen/ceramic-client-golang/internal"
+	"github.com/decentralgabe/ceramic-client-golang/internal"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
